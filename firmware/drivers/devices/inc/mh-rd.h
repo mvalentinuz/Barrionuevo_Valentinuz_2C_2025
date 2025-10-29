@@ -11,6 +11,6 @@ typedef struct {
 
 // Funciones para inicializar y leer el sensor de lluvia
 void mhrdInit(mhrd_config_t *config);
-uint16_t mhrdReadDO(mhrd_config_t *config);
+uint16_t mhrdReadDO();
 
 #endif
