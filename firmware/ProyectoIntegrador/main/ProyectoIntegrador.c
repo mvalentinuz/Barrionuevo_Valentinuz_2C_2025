@@ -42,8 +42,9 @@
 #include "timer_mcu.h"
 #include "gpio_mcu.h"
 #include "switch.h"
-#include "mh-rd.h"
 #include "led.h"
+#include "mh-rd.h"
+
 /*==================[macros and definitions]=================================*/
 #define CONFIG_CHECK_PERIOD_US 1000000 // 1 segundo
 #define SERVO_PIN GPIO_19  // Para usar PWM1_A
