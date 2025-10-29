@@ -91,6 +91,31 @@ static void controlar_tender(void *pvParameter)
 void Tecla1() {
     llueve = !llueve; // Cambiar el estado de lluvia (para pruebas)
 }
+<<<<<<< HEAD
+=======
+
+static void sensarLluvia(void *pvParameter)
+{
+    while (true)
+    {
+        uint16_t lectura = mhrdReadDO();
+        if (lectura == 0)  // Cambiado de 1 a 0
+        {
+            llueve = true;
+            LedOn(LED_3);  // LED para visualizar la detección
+            LedOff(LED_1);
+        }
+        else
+        {
+            llueve = false;
+            LedOff(LED_3);
+            LedOn(LED_1);
+        }
+        
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    }
+}
+>>>>>>> f5c85757fb392c6461e771abb2456383cfd3d578
 /*==================[external functions definition]==========================*/
 /**
  * @brief Función principal. Inicializa hardware y crea las tareas del sistema
@@ -108,6 +133,11 @@ void app_main(void)
     // Inicializaciones
     TimerInit(&timer_config);
     ServoInit(SERVO_TENDER, SERVO_PIN);
+<<<<<<< HEAD
+=======
+    GPIOInit(GPIO_2, GPIO_INPUT);
+    LedsInit();
+>>>>>>> f5c85757fb392c6461e771abb2456383cfd3d578
     SwitchesInit();
     SwitchActivInt(SWITCH_1, Tecla1, NULL); // Para simular cambios de lluvia
 
