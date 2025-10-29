@@ -8,9 +8,19 @@
  *
  * @section hardConn Hardware Connection
  *
- * |    Peripheral  |   ESP32   	|
- * |:--------------:|:--------------|
- * | 	PIN_X	 	| 	GPIO_X		|
+ * |      SG90      |   EDU-ESP  	|
+ * |:--------------:|:-------------:|
+ * | 	Vcc 	    |	5V      	|
+ * | 	Control		| 	GPIO_19		|
+ * | 	Gnd 	    | 	GND     	|
+ * 
+ * |     MH-RD      |   EDU-ESP 	|
+ * |:--------------:|:-------------:|
+ * | 	AO		    | 	   -		|
+ * | 	DO  	 	| 	GPIO_2		|
+ * | 	Gnd 	    | 	GND     	|
+ * | 	Vcc 	    |	5V      	|
+ * 
  *
  *
  * @section changelog Changelog
