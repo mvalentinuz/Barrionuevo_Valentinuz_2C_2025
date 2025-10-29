@@ -104,11 +104,21 @@ static void sensarLluvia(void *pvParameter)
 {
     while (true)
     {
-        if (mhrdReadDO())
+        uint16_t lectura = mhrdReadDO();
+        if (lectura == 0)  // Cambiado de 1 a 0
+        {
             llueve = true;
+            LedOn(LED_3);  // LED para visualizar la detección
+            LedOff(LED_1);
+        }
         else
-            llueve = false;**/
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // espera la notificación del timer
+        {
+            llueve = false;
+            LedOff(LED_3);
+            LedOn(LED_1);
+        }
+        
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     }
 }
 /*==================[external functions definition]==========================*/
@@ -132,6 +142,7 @@ void app_main(void)
     // Inicializaciones
     TimerInit(&timer_config);
     ServoInit(SERVO_TENDER, SERVO_PIN);
+    GPIOInit(GPIO_2, GPIO_INPUT);
     LedsInit();
     SwitchesInit();
     SwitchActivInt(SWITCH_1, Tecla1, NULL); // Para simular cambios de lluvia
