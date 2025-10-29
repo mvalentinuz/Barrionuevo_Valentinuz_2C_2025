@@ -19,7 +19,7 @@
  * |:----------:|:-----------------------------------------------|
  * | 22/10/2025 | Document creation		                         |
  *
- * @author Barrionuevo Zoe zoe.nicole.barrionuevo@gmail.com y Mauro Valentinuz 
+ * @author Barrionuevo Zoe zoe.nicole.barrionuevo@gmail.com y Mauro Valentinuz maurovalentinuz@gmail.com
  *
  */
 
