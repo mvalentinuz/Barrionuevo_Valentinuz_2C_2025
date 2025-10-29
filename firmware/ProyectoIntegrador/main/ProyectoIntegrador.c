@@ -11,7 +11,7 @@
  * |      SG90      |   EDU-ESP  	|
  * |:--------------:|:-------------:|
  * | 	Vcc 	    |	5V      	|
- * | 	Control		| 	GPIO_19		|
+ * | 	PWM 		| 	GPIO_19		|
  * | 	Gnd 	    | 	GND     	|
  * 
  * |     MH-RD      |   EDU-ESP 	|
@@ -59,15 +59,9 @@ bool llueve = false;
  * @brief Handle para la tarea de control del tender
  */
 TaskHandle_t controlar_tender_task_handle = NULL;
-
-/**
- * @brief Handle para la tarea de sensado de lluvia
- */
-TaskHandle_t sensarLluvia_task_handle = NULL;
 /*==================[internal functions declaration]=========================*/
 void FuncTimerA(void* param) {
     vTaskNotifyGiveFromISR(controlar_tender_task_handle, pdFALSE);
-    vTaskNotifyGiveFromISR(sensarLluvia_task_handle, pdFALSE);
 }
 
 /**
@@ -100,6 +94,8 @@ static void controlar_tender(void *pvParameter)
 void Tecla1() {
     llueve = !llueve; // Cambiar el estado de lluvia (para pruebas)
 }
+<<<<<<< HEAD
+=======
 
 static void sensarLluvia(void *pvParameter)
 {
@@ -122,6 +118,7 @@ static void sensarLluvia(void *pvParameter)
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     }
 }
+>>>>>>> f5c85757fb392c6461e771abb2456383cfd3d578
 /*==================[external functions definition]==========================*/
 /**
  * @brief Función principal. Inicializa hardware y crea las tareas del sistema
@@ -136,22 +133,19 @@ void app_main(void)
         .param_p = NULL
     };
 
-    mhrd_config_t mhrd_config = {
-        .GPIO = GPIO_2 // Pin donde está conectado el sensor de lluvia
-    };
-
     // Inicializaciones
     TimerInit(&timer_config);
     ServoInit(SERVO_TENDER, SERVO_PIN);
+<<<<<<< HEAD
+=======
     GPIOInit(GPIO_2, GPIO_INPUT);
     LedsInit();
+>>>>>>> f5c85757fb392c6461e771abb2456383cfd3d578
     SwitchesInit();
     SwitchActivInt(SWITCH_1, Tecla1, NULL); // Para simular cambios de lluvia
-    mhrdInit(&mhrd_config);
 
     // Creación de tareas
-    xTaskCreate(&controlar_tender, "Control tender", 4096, NULL, 5, &controlar_tender_task_handle);
-    xTaskCreate(&sensarLluvia, "Sensar lluvia", 4096, NULL, 5, &sensarLluvia_task_handle);
+    xTaskCreate(&controlar_tender, "Control tender", 512, NULL, 5, &controlar_tender_task_handle);
 
     // Inicio del timer
     TimerStart(timer_config.timer);
