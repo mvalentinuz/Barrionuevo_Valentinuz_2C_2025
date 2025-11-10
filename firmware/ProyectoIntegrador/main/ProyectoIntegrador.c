@@ -43,6 +43,7 @@
 #include "gpio_mcu.h"
 #include "switch.h"
 #include "led.h"
+#include "mh-rd.h"
 #include "analog_io_mcu.h"
 
 /*==================[macros and definitions]=================================*/
