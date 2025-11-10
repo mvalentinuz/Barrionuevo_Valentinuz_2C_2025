@@ -43,7 +43,7 @@
 #include "gpio_mcu.h"
 #include "switch.h"
 #include "led.h"
-#include "mh-rd.h"
+#include "analog_io_mcu.h"
 
 /*==================[macros and definitions]=================================*/
 #define CONFIG_CHECK_PERIOD_US 1000000 // 1 segundo
@@ -59,9 +59,11 @@ bool llueve = false;
  * @brief Handle para la tarea de control del tender
  */
 TaskHandle_t controlar_tender_task_handle = NULL;
+TaskHandle_t sensarLluvia_task_handle = NULL;
 /*==================[internal functions declaration]=========================*/
 void FuncTimerA(void* param) {
     vTaskNotifyGiveFromISR(controlar_tender_task_handle, pdFALSE);
+    vTaskNotifyGiveFromISR(sensarLluvia_task_handle, pdFALSE);
 }
 
 /**
@@ -74,13 +76,13 @@ static void controlar_tender(void *pvParameter)
     {
         if (llueve)
         {
-            // Si llueve, mover el tender bajo techo (90 grados)
-            ServoMove(SERVO_TENDER, 90);
+            // Si llueve, mover el tender bajo techo (0 grados)
+            ServoMove(SERVO_TENDER, 0);
         }
         else
         {
-            // Si no llueve, sacar el tender (0 grados)
-            ServoMove(SERVO_TENDER, 0);
+            // Si no llueve, sacar el tender (90 grados)
+            ServoMove(SERVO_TENDER, 90);
         }
         
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // espera la notificación del timer
@@ -94,15 +96,15 @@ static void controlar_tender(void *pvParameter)
 void Tecla1() {
     llueve = !llueve; // Cambiar el estado de lluvia (para pruebas)
 }
-<<<<<<< HEAD
-=======
 
 static void sensarLluvia(void *pvParameter)
 {
+    uint16_t valor;
     while (true)
     {
-        uint16_t lectura = mhrdReadDO();
-        if (lectura == 0)  // Cambiado de 1 a 0
+        AnalogInputReadSingle(CH0, &valor);
+        printf("V%u\n", valor);
+        if (valor < 3000)  // Cambiado de 1 a 0
         {
             llueve = true;
             LedOn(LED_3);  // LED para visualizar la detección
@@ -118,7 +120,6 @@ static void sensarLluvia(void *pvParameter)
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     }
 }
->>>>>>> f5c85757fb392c6461e771abb2456383cfd3d578
 /*==================[external functions definition]==========================*/
 /**
  * @brief Función principal. Inicializa hardware y crea las tareas del sistema
@@ -132,20 +133,29 @@ void app_main(void)
         .func_p = FuncTimerA,
         .param_p = NULL
     };
-
+    mhrd_config_t mhrd_config = {
+        .GPIO = GPIO_2
+    };
+    analog_input_config_t analogInputConfig = {
+		.input = CH0,
+		.mode = ADC_SINGLE,
+		.sample_frec = 0,
+		.func_p = NULL,
+		.param_p = NULL};
+    AnalogInputInit(&analogInputConfig);
+    
     // Inicializaciones
     TimerInit(&timer_config);
     ServoInit(SERVO_TENDER, SERVO_PIN);
-<<<<<<< HEAD
-=======
     GPIOInit(GPIO_2, GPIO_INPUT);
     LedsInit();
->>>>>>> f5c85757fb392c6461e771abb2456383cfd3d578
     SwitchesInit();
     SwitchActivInt(SWITCH_1, Tecla1, NULL); // Para simular cambios de lluvia
 
+
     // Creación de tareas
-    xTaskCreate(&controlar_tender, "Control tender", 512, NULL, 5, &controlar_tender_task_handle);
+    xTaskCreate(&controlar_tender, "Control tender", 4096, NULL, 5, &controlar_tender_task_handle);
+    xTaskCreate(&sensarLluvia, "Sensar Lluvia", 4096, NULL, 5, &sensarLluvia_task_handle);
 
     // Inicio del timer
     TimerStart(timer_config.timer);
