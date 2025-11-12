@@ -1,10 +1,14 @@
-/*! @mainpage Template
+/*! @mainpage Proyecto Integrador - Tendedero Automatizado
  *
  * @section genDesc General Description
- *
- * This section describes how the program works.
- *
- * <a href="https://drive.google.com/...">Operation Example</a>
+ * El proyecto consiste en el desarrollo de un tendedero de ropa automatizado controlado por microcontrolador, 
+ * capaz de gestionar de forma inteligente el momento de extender o resguardar la ropa según las condiciones ambientales. 
+ * Mediante un sensor de lluvia, el sistema detecta la presencia de lluvia y, en caso de ser necesario, 
+ * acciona un mecanismo motorizado (servomotor) que retrae la ropa hacia el interior para evitar que se moje. 
+ * El sistema también cuenta con un módulo Bluetooth que envía notificaciones al teléfono móvil, informando 
+ * al usuario sobre los eventos de guardado o despliegue.
+ * 
+ * <a href="https://drive.google.com/file/d/1KxaF9nzWENHfq2OSz06COwE2RX_ZmBMj/view?usp=sharing">Operation Example</a>
  *
  * @section hardConn Hardware Connection
  *
@@ -46,12 +50,11 @@
 #include "led.h"
 #include "mh-rd.h"
 #include "analog_io_mcu.h"
-
 #include "ble_mcu.h"
 /*==================[macros and definitions]=================================*/
-#define CONFIG_CHECK_PERIOD_US 1000000 // 1 segundo
+#define CONFIG_CHECK_PERIOD_US 1000000  // 1 segundo
 #define SERVO_PIN GPIO_19  // Para usar PWM1_A
-#define SERVO_TENDER SERVO_0           // Número de servo a utilizar
+#define SERVO_TENDER SERVO_0  // Número de servo a utilizar
 /*==================[internal data definition]===============================*/
 /**
  * @brief Indica si está lloviendo (true) o no (false)
@@ -62,9 +65,21 @@ bool llueve = false;
  * @brief Handle para la tarea de control del tender
  */
 TaskHandle_t controlar_tender_task_handle = NULL;
+
+/**
+ * @brief Handle para la tarea de sensado de lluvia
+ */
 TaskHandle_t sensarLluvia_task_handle = NULL;
+
+/**
+ * @brief Handle para la tarea de Bluetooth
+ */
 TaskHandle_t bluetooth_task_handle = NULL;
 /*==================[internal functions declaration]=========================*/
+/**
+ * @fn void FuncTimerA(void* param)
+ * @brief Función del timer que notifica a las tareas correspondientes
+ */
 void FuncTimerA(void* param) {
     vTaskNotifyGiveFromISR(controlar_tender_task_handle, pdFALSE);
     vTaskNotifyGiveFromISR(sensarLluvia_task_handle, pdFALSE);
@@ -72,8 +87,8 @@ void FuncTimerA(void* param) {
 
 /**
  * @fn void controlar_tender(void *pvParameter)
- * @brief Tarea que controla la posición del tender según el estado del clima
- * Mueve el servo a 90° cuando llueve y a 0° cuando no llueve
+ * @brief Tarea que controla la posición del tender según el estado del clima. 
+ * Mueve el servo a 90° cuando no llueve y a 0° cuando llueve
  */
 static void controlar_tender(void *pvParameter)
 {
@@ -102,6 +117,10 @@ void Tecla1() {
     llueve = !llueve; // Cambiar el estado de lluvia (para pruebas)
 }
 
+/**
+ * @fn static void sensarLluvia(void *pvParameter)
+ * @brief Tarea que sensa la lluvia usando el sensor MH-RD
+ */
 static void sensarLluvia(void *pvParameter)
 {
     uint16_t valor;
@@ -112,14 +131,14 @@ static void sensarLluvia(void *pvParameter)
         if (valor < 3000)  // valores de 0 a 3300 mv
         {
             llueve = true;
-            LedOn(LED_3);  // prende el verde
+            LedOn(LED_3); // prende el verde
             LedOff(LED_1);
         }
         else
         {
             llueve = false;
             LedOff(LED_3);
-            LedOn(LED_1); //prende el rojo
+            LedOn(LED_1); // prende el rojo
         }
         
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
@@ -128,7 +147,7 @@ static void sensarLluvia(void *pvParameter)
 
 /**
  * @fn void bluetooth(*pvParameter)
- * @brief Interrupción de TEC1. Simula cambio en el estado de lluvia
+ * @brief Tarea que envía el estado de lluvia por Bluetooth
  */
 void bluetooth(void *pvParameter){
     char buffer[30];
@@ -160,7 +179,7 @@ void app_main(void)
     };
     // Configuración del ADC
     analog_input_config_t analogInputConfig = {
-		.input = CH0,//cambiar
+		.input = CH0,
 		.mode = ADC_SINGLE,
 		.sample_frec = 0,
 		.func_p = NULL,

@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Proyecto Integrador: Proyecto Integrador - Tendedero Automatizado</title>
+<link rel="icon" href="icon.ico" type="image/x-icon" />
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(function() { init_search(); });
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="fiuner.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Proyecto Integrador<span id="projectnumber">&#160;1.0</span>
+   </div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Buscar" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generado por Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('index.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Cargando...</div>
+<div class="SRStatus" id="Searching">Buscando...</div>
+<div class="SRStatus" id="NoMatches">Nada coincide</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Proyecto Integrador - Tendedero Automatizado </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1 class="doxsection"><a class="anchor" id="genDesc"></a>
+General Description</h1>
+<p>El proyecto consiste en el desarrollo de un tendedero de ropa automatizado controlado por microcontrolador, capaz de gestionar de forma inteligente el momento de extender o resguardar la ropa según las condiciones ambientales. Mediante un sensor de lluvia, el sistema detecta la presencia de lluvia y, en caso de ser necesario, acciona un mecanismo motorizado (servomotor) que retrae la ropa hacia el interior para evitar que se moje. El sistema también cuenta con un módulo Bluetooth que envía notificaciones al teléfono móvil, informando al usuario sobre los eventos de guardado o despliegue.</p>
+<p><a href="https://drive.google.com/file/d/1KxaF9nzWENHfq2OSz06COwE2RX_ZmBMj/view?usp=sharing">Operation Example</a></p>
+<h1 class="doxsection"><a class="anchor" id="hardConn"></a>
+Hardware Connection</h1>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadCenter">SG90  </th><th class="markdownTableHeadCenter">EDU-ESP  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">Vcc  </td><td class="markdownTableBodyCenter">5V  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">PWM  </td><td class="markdownTableBodyCenter">GPIO_19  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">Gnd  </td><td class="markdownTableBodyCenter">GND  </td></tr>
+</table>
+<p>| MH-RD | EDU-ESP | |:-----------&mdash;:|:----------&mdash;:| | AO | CH0 |//AO salida analogica 0 a 3300mv | DO | - |//DO salida digital 0 o 1 | Gnd | GND | | Vcc | 5V |</p>
+<h1 class="doxsection"><a class="anchor" id="changelog"></a>
+Changelog</h1>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadCenter">Date  </th><th class="markdownTableHeadLeft">Description  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyCenter">22/10/2025  </td><td class="markdownTableBodyLeft">Document creation  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyCenter">12/11/2025  </td><td class="markdownTableBodyLeft">Finalización del proyecto  </td></tr>
+</table>
+<dl class="section author"><dt>Autor</dt><dd>Barrionuevo Zoe <a href="#" onclick="location.href='mai'+'lto:'+'zoe'+'.n'+'ico'+'le'+'.ba'+'rr'+'ion'+'ue'+'vo@'+'gm'+'ail'+'.c'+'om'; return false;">zoe.n<span class="obfuscator">.nosp@m.</span>icol<span class="obfuscator">.nosp@m.</span>e.bar<span class="obfuscator">.nosp@m.</span>rion<span class="obfuscator">.nosp@m.</span>uevo@<span class="obfuscator">.nosp@m.</span>gmai<span class="obfuscator">.nosp@m.</span>l.com</a> y Mauro Valentinuz <a href="#" onclick="location.href='mai'+'lto:'+'mau'+'ro'+'val'+'en'+'tin'+'uz'+'@gm'+'ai'+'l.c'+'om'; return false;">mauro<span class="obfuscator">.nosp@m.</span>vale<span class="obfuscator">.nosp@m.</span>ntinu<span class="obfuscator">.nosp@m.</span>z@gm<span class="obfuscator">.nosp@m.</span>ail.c<span class="obfuscator">.nosp@m.</span>om</a> </dd></dl>
+</div></div><!-- PageDoc -->
+<a href="doxygen_crawl.html"></a>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generado por <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>
