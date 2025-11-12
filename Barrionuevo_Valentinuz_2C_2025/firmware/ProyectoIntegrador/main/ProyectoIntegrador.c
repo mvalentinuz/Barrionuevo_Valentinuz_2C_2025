@@ -16,8 +16,8 @@
  * 
  * |     MH-RD      |   EDU-ESP 	|
  * |:--------------:|:-------------:|
- * | 	AO		    | 	CH0 		|//AO salida analogica 0 a 3300mv
- * | 	DO  	 	| 	-       	|//DO salida digital 0 o 1
+ * | 	AO		    | 	   -		|
+ * | 	DO  	 	| 	GPIO_2		|
  * | 	Gnd 	    | 	GND     	|
  * | 	Vcc 	    |	5V      	|
  * 
@@ -28,7 +28,6 @@
  * |   Date	    | Description                                    |
  * |:----------:|:-----------------------------------------------|
  * | 22/10/2025 | Document creation		                         |
- * | 12/11/2025 | Finalización del proyecto		                 |
  *
  * @author Barrionuevo Zoe zoe.nicole.barrionuevo@gmail.com y Mauro Valentinuz maurovalentinuz@gmail.com
  *
@@ -45,8 +44,6 @@
 #include "switch.h"
 #include "led.h"
 #include "mh-rd.h"
-#include "analog_io_mcu.h"
-
 /*==================[macros and definitions]=================================*/
 #define CONFIG_CHECK_PERIOD_US 1000000 // 1 segundo
 #define SERVO_PIN GPIO_19  // Para usar PWM1_A
@@ -61,11 +58,9 @@ bool llueve = false;
  * @brief Handle para la tarea de control del tender
  */
 TaskHandle_t controlar_tender_task_handle = NULL;
-TaskHandle_t sensarLluvia_task_handle = NULL;
 /*==================[internal functions declaration]=========================*/
 void FuncTimerA(void* param) {
     vTaskNotifyGiveFromISR(controlar_tender_task_handle, pdFALSE);
-    vTaskNotifyGiveFromISR(sensarLluvia_task_handle, pdFALSE);
 }
 
 /**
@@ -78,13 +73,13 @@ static void controlar_tender(void *pvParameter)
     {
         if (llueve)
         {
-            // Si llueve, mover el tender bajo techo (0 grados)
-            ServoMove(SERVO_TENDER, 0);
+            // Si llueve, mover el tender bajo techo (90 grados)
+            ServoMove(SERVO_TENDER, 90);
         }
         else
         {
-            // Si no llueve, sacar el tender (90 grados)
-            ServoMove(SERVO_TENDER, 90);
+            // Si no llueve, sacar el tender (0 grados)
+            ServoMove(SERVO_TENDER, 0);
         }
         
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // espera la notificación del timer
@@ -101,22 +96,20 @@ void Tecla1() {
 
 static void sensarLluvia(void *pvParameter)
 {
-    uint16_t valor;
     while (true)
     {
-        AnalogInputReadSingle(CH0, &valor); //conversión analógica digital
-        printf("V%u\n", valor);
-        if (valor < 3000)  // valores de 0 a 3300 mv
+        uint16_t lectura = mhrdReadDO();
+        if (lectura == 0)  // Cambiado de 1 a 0
         {
             llueve = true;
-            LedOn(LED_3);  // prende el verde
+            LedOn(LED_3);  // LED para visualizar la detección
             LedOff(LED_1);
         }
         else
         {
             llueve = false;
             LedOff(LED_3);
-            LedOn(LED_1); //prende el rojo
+            LedOn(LED_1);
         }
         
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
@@ -136,25 +129,16 @@ void app_main(void)
         .param_p = NULL
     };
 
-    analog_input_config_t analogInputConfig = {
-		.input = CH0,
-		.mode = ADC_SINGLE, //modo de lectura individuales
-		.sample_frec = 0, //solo para modo continuo
-		.func_p = NULL,
-		.param_p = NULL};
-    
     // Inicializaciones
-    AnalogInputInit(&analogInputConfig);
     TimerInit(&timer_config);
     ServoInit(SERVO_TENDER, SERVO_PIN);
+    GPIOInit(GPIO_2, GPIO_INPUT);
     LedsInit();
     SwitchesInit();
     SwitchActivInt(SWITCH_1, Tecla1, NULL); // Para simular cambios de lluvia
 
-
     // Creación de tareas
-    xTaskCreate(&controlar_tender, "Control tender", 4096, NULL, 5, &controlar_tender_task_handle);
-    xTaskCreate(&sensarLluvia, "Sensar Lluvia", 4096, NULL, 5, &sensarLluvia_task_handle);
+    xTaskCreate(&controlar_tender, "Control tender", 512, NULL, 5, &controlar_tender_task_handle);
 
     // Inicio del timer
     TimerStart(timer_config.timer);
