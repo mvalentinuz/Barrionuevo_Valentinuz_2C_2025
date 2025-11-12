@@ -28,6 +28,7 @@
  * |   Date	    | Description                                    |
  * |:----------:|:-----------------------------------------------|
  * | 22/10/2025 | Document creation		                         |
+ * | 12/11/2025 | Finalización del proyecto                      |
  *
  * @author Barrionuevo Zoe zoe.nicole.barrionuevo@gmail.com y Mauro Valentinuz maurovalentinuz@gmail.com
  *
@@ -46,6 +47,7 @@
 #include "mh-rd.h"
 #include "analog_io_mcu.h"
 
+#include "ble_mcu.h"
 /*==================[macros and definitions]=================================*/
 #define CONFIG_CHECK_PERIOD_US 1000000 // 1 segundo
 #define SERVO_PIN GPIO_19  // Para usar PWM1_A
@@ -61,6 +63,7 @@ bool llueve = false;
  */
 TaskHandle_t controlar_tender_task_handle = NULL;
 TaskHandle_t sensarLluvia_task_handle = NULL;
+TaskHandle_t bluetooth_task_handle = NULL;
 /*==================[internal functions declaration]=========================*/
 void FuncTimerA(void* param) {
     vTaskNotifyGiveFromISR(controlar_tender_task_handle, pdFALSE);
@@ -68,6 +71,7 @@ void FuncTimerA(void* param) {
 }
 
 /**
+ * @fn void controlar_tender(void *pvParameter)
  * @brief Tarea que controla la posición del tender según el estado del clima
  * Mueve el servo a 90° cuando llueve y a 0° cuando no llueve
  */
@@ -104,8 +108,8 @@ static void sensarLluvia(void *pvParameter)
     while (true)
     {
         AnalogInputReadSingle(CH0, &valor);
-        printf("V%u\n", valor);
-        if (valor < 3000)  // Cambiado de 1 a 0
+        printf("Valor: %u\n", valor);
+        if (valor < 3000)
         {
             llueve = true;
             LedOn(LED_3);  // LED para visualizar la detección
@@ -121,6 +125,26 @@ static void sensarLluvia(void *pvParameter)
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     }
 }
+
+/**
+ * @fn void bluetooth(*pvParameter)
+ * @brief Interrupción de TEC1. Simula cambio en el estado de lluvia
+ */
+void bluetooth(void *pvParameter){
+    char buffer[30];
+    while(true){
+        if(llueve){
+            sprintf(buffer, "*NEstado: Llueve\n");
+            BleSendString(buffer);
+        }
+        else{
+            sprintf(buffer, "*NEstado: No Llueve\n");
+            BleSendString(buffer);
+    }
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+}
+        
+}
 /*==================[external functions definition]==========================*/
 /**
  * @brief Función principal. Inicializa hardware y crea las tareas del sistema
@@ -134,29 +158,31 @@ void app_main(void)
         .func_p = FuncTimerA,
         .param_p = NULL
     };
-    mhrd_config_t mhrd_config = {
-        .GPIO = GPIO_2
-    };
+    // Configuración del ADC
     analog_input_config_t analogInputConfig = {
-		.input = CH0,
+		.input = CH0,//cambiar
 		.mode = ADC_SINGLE,
 		.sample_frec = 0,
 		.func_p = NULL,
 		.param_p = NULL};
-    AnalogInputInit(&analogInputConfig);
-    
+    //Configuración del BLE
+    ble_config_t BLEconfig = {
+        "AppTender",
+        BLE_NO_INT
+    };
     // Inicializaciones
+    AnalogInputInit(&analogInputConfig);
     TimerInit(&timer_config);
     ServoInit(SERVO_TENDER, SERVO_PIN);
-    GPIOInit(GPIO_2, GPIO_INPUT);
     LedsInit();
     SwitchesInit();
     SwitchActivInt(SWITCH_1, Tecla1, NULL); // Para simular cambios de lluvia
-
+    BleInit(&BLEconfig);
 
     // Creación de tareas
     xTaskCreate(&controlar_tender, "Control tender", 4096, NULL, 5, &controlar_tender_task_handle);
     xTaskCreate(&sensarLluvia, "Sensar Lluvia", 4096, NULL, 5, &sensarLluvia_task_handle);
+    xTaskCreate(&bluetooth, "Bluetooth", 4096, NULL, 5, &bluetooth_task_handle);
 
     // Inicio del timer
     TimerStart(timer_config.timer);
